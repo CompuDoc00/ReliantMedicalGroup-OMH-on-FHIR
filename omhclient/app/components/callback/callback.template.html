@@ -1,0 +1,6 @@
+<div ng-if="$ctrl.omhOnFhirApi.getLoginSuccessful() == true">
+    <h3>Authorization by {{$ctrl.omhOnFhirApi.getDisplayName()}} was successful. Please close this window and click on the original login window.</h3>
+</div>
+<div ng-if="$ctrl.omhOnFhirApi.getLoginSuccessful() == false">
+    <h3>Authentication was not successful. Please close this window.</h3>
+</div>

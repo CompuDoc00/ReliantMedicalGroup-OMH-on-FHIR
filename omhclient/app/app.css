@@ -1,0 +1,48 @@
+/* app css stylesheet */
+
+.menu {
+  list-style: none;
+  border-bottom: 0.1em solid #000000;
+  margin-bottom: 2em;
+  padding: 0 0 0.5em;
+}
+
+.menu:before {
+  content: "[";
+}
+
+.menu:after {
+  content: "]";
+}
+
+.menu > li {
+  display: inline;
+}
+
+.menu > li + li:before {
+  content: "|";
+  padding-right: 0.3em;
+}
+
+.observation-header {
+  text-decoration: underline;
+}
+
+.omh-header {
+  background-image: url("img/omh_logo.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 75px;
+  height: 55px;
+}
+
+.omh-header2 {
+  background-image: url("img/rmg_mychart_logo.png");
+  background-repeat: no-repeat;
+  background-position: right;
+  width: 190px;
+  height: 158px;
+}
+.h4 {
+  margin-left: 10px;
+}

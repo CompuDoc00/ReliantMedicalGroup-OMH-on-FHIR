@@ -1,0 +1,27 @@
+subprojects {
+    apply plugin: 'java'
+
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+
+    group = "org.openmhealth.shim"
+
+    ext {
+        javaVersion = 1.8
+        shimmerVersion = "0.6.0"
+        omhSchemaSdkVersion = "1.2.1"
+    }
+
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+
+    test {
+        useTestNG()
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = "6.5"
+}

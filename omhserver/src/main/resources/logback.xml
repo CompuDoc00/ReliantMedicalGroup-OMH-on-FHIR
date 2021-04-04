@@ -1,0 +1,23 @@
+<configuration debug="true">
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.gtri.hdap.mdata.service.ShimmerService" level="DEBUG"/>
+    <logger name="org.gtri.hdap.mdata.service.ResponseService" level="DEBUG"/>
+    <logger name="org.gtri.hdap.mdata.controller" level="DEBUG"/>
+    <logger name="org.gtri.hdap.mdata.controller.PatientDataController" level="DEBUG"/>
+    <logger name="org.gtri.hdap.mdata.controller.CreateSessionInterceptor" level="DEBUG"/>
+    <logger name="org.gtri.hdap.mdata.conf" level="DEBUG"/>
+    <logger name="org.gtri.hdap.mdata.jackson" level="DEBUG"/>
+    <logger name="org.gtri.hdap.mdata.jpa" level="DEBUG"/>
+
+    <root level="ERROR">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
