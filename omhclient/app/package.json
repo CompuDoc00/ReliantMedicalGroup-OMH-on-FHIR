@@ -1,0 +1,11 @@
+{
+  "name": "RMG-OMH-Client2",
+  "version": "0.0.0",
+  "description": "RMG-OMH-Client2",
+  "author": {
+    "name": ""
+  },
+  "dependencies": {
+    "angular-cookies": "^1.5.11"
+  }
+}

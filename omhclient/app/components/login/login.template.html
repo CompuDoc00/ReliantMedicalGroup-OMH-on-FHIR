@@ -1,0 +1,86 @@
+
+<div class="panel panel-default">
+    <div class="panel panel-default" ng-if="lookupResponse == undefined || lookupResponse == '' || lookupResponse.OK == false">
+        <div class="myIndent">
+            <style>
+                h4 {
+                    margin-left: 10px;
+                }
+            </style>
+            <h4>Reliant Medical Group patients can use this site to connect your personal health monitoring devices to your healthcare team. Discuss with your healthcare provider about whether this would be helpful to you.</h4>
+            <h4>If appropriate, your healthcare provider will place an order to connect to your home scale, blood pressure monitor, thermometer, pulse oximeter, activity monitor, or other similar device.</h4>
+            <h4>After entering a secret code given to you by your healthcare provider, your device's readings will automatically and securely be copied into your Electronic Health Record at Reliant.</h4>
+            <h4>If you use MyChart, you will be able to see your results there as well.</h4>
+        </div>
+        <div class="panel-heading"><h2>First, please confirm your identity:</h2></div>
+        <div class="panel-body">
+            <h4>Enter the Monitoring Device Access Code given to you by your healthcare provider, and the last 4 digits of your Social Security Number, and then click the Submit button</h4>
+            <form name="myForm">
+                <div class="form-group col-xs-4">
+                    <label for="accessCode">Access Code:</label>
+                    <input class="form-control input-lg" ng-model="$ctrl.ORDaccessCode" type="text" autofocus="autofocus" id="accessCode" name="accessCode" required>
+                </div>
+                <div class="form-group col-xs-4">
+                    <label for="SSN">Last 4 digits of your Social Security Number:</label>
+                    <!-- <input class="form-control input-lg" ng-model="$ctrl.SSN4" type="number" id="SSN" name="SSN" ng-pattern="/^[0-9]{4}$/" required> -->
+                    <input class="form-control input-lg" ng-model="$ctrl.SSN4" type="{{ $ctrl.typePassword ? 'text' : 'password' }}" id="SSN" name="SSN" ng-pattern="/^[0-9]{4}$/" required>
+                    <input type="checkbox"  ng-click="$ctrl.toggleVisibleSSN()">{{ $ctrl.typePassword ? 'Hide' : 'Show' }} entered number
+                </div>
+                <div>
+                    <p> <br> <br> <br> <br> <br> <br></p>
+                </div>
+                <div>
+                    <button class="btn btn-info btn-lg" ng-disabled="myForm.SSN.$invalid || myForm.accessCode.$invalid" ng-click="$ctrl.orderLookup()">Submit</button>
+                </div>
+            </form>
+            <div>
+                <p> <br></p>
+            </div>
+            <div ng-if="$ctrl.waitingForLookup && (lookupResponse == undefined || lookupResponse == '')" class="alert alert-info">
+                <i class="fa fa-spinner fa-spin" style="font-size:24px"></i>
+                Confirming your identity...
+            </div>
+            <div ng-if="lookupResponse.OK == false" class="panel panel-danger">
+                <div class="panel-heading">
+                    <h2>Unable to confirm your ability to copy your measurements to your Electronic Health Record at Reliant Medical Group.</h2>
+                </div>
+                <h2>Please make sure that you received a Monitoring Device Access Code from you Reliant healthcare provider, and that you entered the information correctly above.</h2>
+                <h2>If still unsuccessful, please contact your healthcare team at Reliant to be sure that <em><strong>we</strong></em> correctly entered the last 4 digits of your Social Security Number into your Electronic Health Record</h2>
+            </div>
+            <!-- <div class="panel panel-default">
+                Here's what I got:<br />
+                OK: {{lookupResponse.OK}}<br />
+                Name: {{lookupResponse.Name}}<br />
+                MRN: {{lookupResponse.MRN}}<br />
+                Measure: {{lookupResponse.Measure}}<br />
+            </div> -->
+        </div>
+    </div>
+    <div class="panel panel-default" ng-if="lookupResponse.OK == true">
+        <style>
+            h3 {
+                margin-left: 10px;
+            }
+        </style>
+        <!-- <h3>{{$ctrl.pageMsg}}</h3> -->
+        <div class="alert-warning" ng-if="$ctrl.alertMsg">
+            {{$ctrl.alertMsg}}
+        </div>
+        <h3>{{lookupResponse.Name}}, your identity has been confirmed by Reliant Medical Group</h3>
+        <h3>Now select the personal health monitoring app below that you use and complete its authorization process. This will securely link your devices connected to your app to Reliant Medical Group:</h3>
+        <!-- <div>
+            <a class="btn btn-default" ng-href=$ctrl.fitBitUrl target="_self" ng-mousedown="$ctrl.loginWithFitbit()"><img src="{{$ctrl.env.baseUrl}}img/fitbit-transparent.png" height="25" width="99"></a>
+        </div>  -->
+        <div>
+            <a class="btn btn-default" ng-href=$ctrl.googleFitUrl target="_self" ng-mousedown="$ctrl.loginWithGoogleFit(lookupResponse.Name, lookupResponse.MRN, lookupResponse.Measure)"><img src="{{$ctrl.env.baseUrl}}img/Google-Fit-Logo-transparent.png" height="25" width="99"></a>
+        </div>
+        <h4>   </h4>
+        <div>
+            <a class="btn btn-default" ng-href=$ctrl.iHealthUrl target="_self" ng-mousedown="$ctrl.loginWithiHealth(lookupResponse.Name, lookupResponse.MRN, lookupResponse.Measure)"><img src="{{$ctrl.env.baseUrl}}img/iHealth-transparent.png" height="25" width="99"></a>
+        </div>
+        <h4>   </h4>
+        <div>
+            <a class="btn btn-default" ng-href=$ctrl.withingsUrl target="_self" ng-mousedown="$ctrl.loginWithWithings(lookupResponse.Name, lookupResponse.MRN, lookupResponse.Measure)"><img src="{{$ctrl.env.baseUrl}}img/Withings-transparent.png" height="25" width="99"></a>
+        </div>
+    </div>
+</div>

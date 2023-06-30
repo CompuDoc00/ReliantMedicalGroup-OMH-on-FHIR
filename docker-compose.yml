@@ -1,0 +1,84 @@
+version: '3.0'
+services:
+  resource-server:
+    #image: openmhealth/shimmer-resource-server
+    build:
+      context: ./shim-server/docker
+      dockerfile: Dockerfile
+    image: rmgresourceserver
+    container_name: rmgresourceserver
+    volumes:
+      - "./:/mnt/OMH-on-FHIR"
+    restart: always
+    #environment:
+    #  SPRING_PROFILES_ACTIVE: development
+    depends_on:
+      - mongo
+    env_file:
+      #- ./resource-server.env
+      - ./resource-server.env
+    ports:
+      - "8084:8083"
+    logging:
+      driver: "local"
+    #command: /usr/bin/java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -jar /opt/omh/shimmer/shimmer.war --spring.config.location=file:/opt/omh/shimmer/ 
+
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    logging:
+      driver: "local"
+
+  console:
+    image: openmhealth/shimmer-console
+    restart: always
+    ports:
+      - "8083:8083"
+    depends_on:
+      - resource-server
+    logging:
+      driver: "local"
+
+  mdata-db:
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./omhserver/postgres.env
+    logging:
+      driver: "local"
+
+  mdata-app15:
+    build:
+      context: ./omhserver
+      dockerfile: Dockerfile
+    image: rmgmdataserver
+    container_name: rmgmdataserver
+    restart: always
+    ports:
+      - "8888:8080"
+      - "443:443"
+    env_file:
+      - ./omhserver/omh-server.env
+    depends_on:
+      - mdata-db
+    logging:
+      driver: "local"
+
+  omh-on-fhir-client35:
+    build:
+      #specifiy the project build context
+      context: ./omhclient
+      #specifiy the Dockerfile to use
+      dockerfile: Dockerfile
+    image: rmgomhclient
+    container_name: rmgomhclient
+    restart: always
+    #bind host port 8989 to container port 8080
+    ports:
+      - "8989:80"
+    logging:
+      driver: "local"

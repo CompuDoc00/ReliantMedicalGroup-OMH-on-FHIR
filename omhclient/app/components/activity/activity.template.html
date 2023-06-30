@@ -1,0 +1,110 @@
+<div ng-if="$ctrl.omhOnFhirApi.getEpicOK()">
+    <h1>{{$ctrl.omhOnFhirApi.getMeasureDisplayForHeading()}} measurements for {{$ctrl.omhOnFhirApi.getDisplayName()}} are now being copied to your Electronic Health Record at Reliant. Below is a sample.</h1>
+</div>
+
+<div ng-if="$ctrl.omhOnFhirApi.getEpicOK() == 'false'">
+    <h1>{{$ctrl.omhOnFhirApi.getMeasureDisplayForHeading()}} measurements for {{$ctrl.omhOnFhirApi.getDisplayName()}} were unable to be copied to your Electronic Health Record at Reliant. Below is a sample.</h1>
+</div>
+
+
+<div class="panel panel-default">
+    <div class="panel-heading"><a href="#" ng-click="$ctrl.toggleStepCountVisibility()"><h2>{{$ctrl.omhOnFhirApi.getMeasureDisplayForHeading()}}</h2></a></div>
+    <div class="panel-body" ng-if="$ctrl.stepCountVisible == true">
+        <form>
+            <h1>Find daily {{$ctrl.omhOnFhirApi.getMeasureDisplayForHeading()}} for date range</h1>
+            <div class="form-group">
+                <label for="startDate">Start Date:</label>
+                <!-- Using date input type for details see: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/date -->
+                <!-- input value is of the format yyyy-MM-dd by default -->
+                <input ng-model="$ctrl.startDate" type="date" id="startDate" name="startDate">
+            </div>
+            <div class="form-group">
+                <label for="endDate">End Date:</label>
+                <!-- Using date input type for details see: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/date -->
+                <!-- input value is of the format yyyy-MM-dd by default -->
+                <input ng-model="$ctrl.endDate" type="date" id="endDate" name="endDate">
+            </div>
+            <button class="btn btn-default" ng-click="$ctrl.retrieveStepCount()">Search</button>
+        </form>
+
+        <div ng-if="$ctrl.waitingForSearch || $ctrl.waitingForGraph" class="alert alert-info">
+            <i class="fa fa-spinner fa-spin" style="font-size:24px"></i>
+            Searching for {{$ctrl.omhOnFhirApi.getMeasureDisplay()}}...
+        </div>
+
+        <div class="panel panel-default">
+            <div class="chart-container">
+                <!-- IMPORTANT: The svg element must be visible at all times in order for the d3 javascript object to
+                     find it and populate it with data -->
+                <svg class="chart">
+                </svg>
+            </div>
+
+            <button class="btn btn-default" ng-if="$ctrl.omhActivity && $ctrl.showStepDataTable == false" ng-click="$ctrl.toggleShowStepDataTable()">Show Data Table</button>
+            <button class="btn btn-default" ng-if="$ctrl.omhActivity && $ctrl.showStepDataTable == true" ng-click="$ctrl.toggleShowStepDataTable()">Hide Data Table</button>
+
+            <h3 ng-if="$ctrl.showStepDataTable">All {{$ctrl.omhOnFhirApi.getMeasureDisplayForHeading()}} Data Points</h3>
+            <table ng-if="$ctrl.showStepDataTable" class="table table-striped">
+                <thead>
+                <tr>
+                    <td>{{$ctrl.omhOnFhirApi.getMeasureDisplayForHeading()}}</td>
+                    <td>Start Time</td>
+                    <td>End Time</td>
+                    <td>Source</td>
+                    <td>Origin</td>
+                    <td>Creation Date</td>
+                    <td>Schema</td>
+                    <td>Schema Namespace</td>
+                    <td>Schema Version</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="stepActivity in $ctrl.omhActivity.body">
+                    <!--   <td>{{stepActivity.body.step_count}}</td>  -->
+                    <td ng-if="$ctrl.omhOnFhirApi.getMeasure() == 'STEP_COUNT'">{{stepActivity.body.step_count}} steps</td>
+                    <td ng-if="$ctrl.omhOnFhirApi.getMeasure() == 'STEP_COUNT'">{{stepActivity.body.effective_time_frame.time_interval.start_date_time | date:"MM/dd/yyyy '-' h:mma"}}</td><!--<td>{{stepActivity.body.effective_time_frame.time_interval.start_date_time}}</td>-->
+                    <td ng-if="$ctrl.omhOnFhirApi.getMeasure() == 'STEP_COUNT'">{{stepActivity.body.effective_time_frame.time_interval.end_date_time | date:"MM/dd/yyyy '-' h:mma"}}</td><!--<td>{{stepActivity.body.effective_time_frame.time_interval.end_date_time}}</td>-->
+                    <td ng-if="$ctrl.omhOnFhirApi.getMeasure() == 'BODY_WEIGHT'">{{stepActivity.body.body_weight.value}} {{stepActivity.body.body_weight.unit}}</td>
+                    <td ng-if="$ctrl.omhOnFhirApi.getMeasure() == 'BODY_WEIGHT'">{{stepActivity.body.effective_time_frame.date_time | date:"MM/dd/yyyy '-' h:mma"}}</td><!--<td>{{stepActivity.body.effective_time_frame.time_interval.start_date_time}}</td>-->
+                    <td ng-if="$ctrl.omhOnFhirApi.getMeasure() == 'BODY_WEIGHT'">   </td><!--<td>{{stepActivity.body.effective_time_frame.time_interval.end_date_time}}</td>-->
+                    <td ng-if="($ctrl.omhOnFhirApi.getMeasure() == 'BLOOD_PRESSURE') || ($ctrl.omhOnFhirApi.getMeasure() == 'SYSTOLIC_BLOOD_PRESSURE, DIASTOLIC_BLOOD_PRESSURE')">{{stepActivity.body.systolic_blood_pressure.value}}/{{stepActivity.body.diastolic_blood_pressure.value}}</td>
+                    <td ng-if="($ctrl.omhOnFhirApi.getMeasure() == 'BLOOD_PRESSURE') || ($ctrl.omhOnFhirApi.getMeasure() == 'SYSTOLIC_BLOOD_PRESSURE, DIASTOLIC_BLOOD_PRESSURE')">{{stepActivity.body.effective_time_frame.date_time | date:"MM/dd/yyyy '-' h:mma"}}</td><!--<td>{{stepActivity.body.effective_time_frame.time_interval.start_date_time}}</td>-->
+                    <td ng-if="($ctrl.omhOnFhirApi.getMeasure() == 'BLOOD_PRESSURE') || ($ctrl.omhOnFhirApi.getMeasure() == 'SYSTOLIC_BLOOD_PRESSURE, DIASTOLIC_BLOOD_PRESSURE')">   </td><!--<td>{{stepActivity.body.effective_time_frame.time_interval.end_date_time}}</td>-->
+                    <td ng-if="$ctrl.omhOnFhirApi.getMeasure() == 'HEART_RATE'">{{stepActivity.body.heart_rate.value}} {{stepActivity.body.heart_rate.unit}}</td>
+                    <td ng-if="$ctrl.omhOnFhirApi.getMeasure() == 'HEART_RATE'">{{stepActivity.body.effective_time_frame.date_time | date:"MM/dd/yyyy '-' h:mma"}}</td><!--<td>{{stepActivity.body.effective_time_frame.time_interval.start_date_time}}</td>-->
+                    <td ng-if="$ctrl.omhOnFhirApi.getMeasure() == 'HEART_RATE'">   </td><!--<td>{{stepActivity.body.effective_time_frame.time_interval.end_date_time}}</td>-->
+                    <td ng-if="$ctrl.omhOnFhirApi.getMeasure() == 'OXYGEN_SATURATION'">{{stepActivity.body.oxygen_saturation.value}} {{stepActivity.body.oxygen_saturation.unit}}</td>
+                    <td ng-if="$ctrl.omhOnFhirApi.getMeasure() == 'OXYGEN_SATURATION'">{{stepActivity.body.effective_time_frame.date_time | date:"MM/dd/yyyy '-' h:mma"}}</td><!--<td>{{stepActivity.body.effective_time_frame.time_interval.start_date_time}}</td>-->
+                    <td ng-if="$ctrl.omhOnFhirApi.getMeasure() == 'OXYGEN_SATURATION'">   </td><!--<td>{{stepActivity.body.effective_time_frame.time_interval.end_date_time}}</td>-->
+                    <td>{{stepActivity.header.acquisition_provenance.source_name}}</td>
+                    <td>{{stepActivity.header.acquisition_provenance.source_origin_id}}</td>
+                    <td>{{stepActivity.header.creation_date_time | date:"MM/dd/yyyy '-' h:mma"}}</td> <!--<td>{{stepActivity.header.creation_date_time}}</td>-->
+                    <td>{{stepActivity.header.schema_id.name}}</td>
+                    <td>{{stepActivity.header.schema_id.namespace}}</td>
+                    <td>{{stepActivity.header.schema_id.version}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="panel panel-default">
+    <div class="panel-heading"><a href="#" ng-click="$ctrl.toggleToolsVisibility()"><h2>Tools <small>to view message details</small></h2></a></div>
+    <div class="panel-body" ng-if="$ctrl.toolsVisible == true">
+        <div class="panel panel-default">
+            <div class="panel-heading observation-header"><a href="#" ng-click="$ctrl.toggleDocReferenceVisibility()"><h4>Step Count as STU3 DocumentReference</h4></a></div>
+            <div class="panel-body" ng-if="$ctrl.docReferenceVisible == true">
+                <pre>{{$ctrl.activityDocumentRef}}</pre>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading observation-header"><a href="#" ng-click="$ctrl.toggleObservationVisibility()"><h4>Step Count as STU3 Observations</h4></a></div>
+            <div class="panel-body" ng-if="$ctrl.observationVisible == true">
+                <pre>{{$ctrl.prunedObservationResponse}}</pre>
+                <button class="btn btn-default" ng-click="$ctrl.saveJsonObservation()">Download Entire Observation</button>
+            </div>
+        </div>
+    </div>
+</div>
